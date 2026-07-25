@@ -1,50 +1,17 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include "mlx/mlx.h"
-#include <stdlib.h>
+#include "../../include/cub3d.h"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-#define FOV (60 * (M_PI / 180))
-
-typedef struct s_game
+int calculer_hauteur(t_game *g, double distance)
 {
-    void    *mlx; // Contien la minilibx
-    void    *win; // La fenêtre mlx
-    void    *img; //Load l'image dans laquelle on dessine
-    char    *addr; // Adresse de début de l'image
-    int     bpp; // Bits par pixel
-    int     line_len; // Nombre d'octet par ligne dans l'image
-    int     endian; // A priori on va pas l'utiliser
+    double projection_plane = 800 / tan(FOV / 2);
+    int height = (int)((g->tile_size / distance) * projection_plane);
 
-    void *tex_no; // Texture NO
-    void *tex_so; // Texture SO
-    void *tex_we; // Texture WE
-    void *tex_ea; // Texture EA
+    if (height > 600)
+        height = 600;
 
-    char *addr_no; // Adresse du buffer NO
-    char *addr_so; // Adresse du buffer SO
-    char *addr_we; // Adresse du buffer WE
-    char *addr_ea; // Adresse du buffer ea
+    return height;
+}
 
-    int tex_w; // Largeur des textures
-    int tex_h; // Hauteur des textures
-    int tex_bpp; // Bits par pixel des textures
-    int tex_line_len; // Octet par ligne dans les textures
-    int tex_endian; // Pas utilisé ici non plus
 
-    char    **map; // La map en tableau de chaînes
-    int     map_width; // La largeur de la map en cases
-    int     map_height; // La heuteur de la map en cases
-    int     tile_size; // Taille d'un bloc
-
-    double  player_x; // Position X du joueur en pixel
-    double  player_y; // Position Y du joueur en pixel
-    double  player_angle; // Angle du joueur (utilisé pour savoir dans quelle direction il regarde)
-
-}   t_game;
 
 void clear_image(t_game *g)
 {
@@ -60,36 +27,111 @@ int render_frame(t_game *g)
 
     for (int col = 0; col < 800; col++)
     {
+        // Angle du rayon pour cette colonne
         double ray_angle = g->player_angle + (col - 400) * FOV / 800;
 
-        double distance = lancer_rayon(g, ray_angle);
+        // Lancer le rayon → distance + face + hit_x + hit_y
+        t_hit hit = lancer_rayon(g, ray_angle);
 
-        int wall_height = calculer_hauteur(distance);
+        // Calculer la hauteur du mur
+        int wall_height = calculer_hauteur(g, hit.distance);
 
-        dessiner_colonne(g, col, wall_height);
+        // Dessiner la colonne texturée
+        dessiner_colonne(g, col, wall_height, hit);
     }
 
+    // Afficher l'image dans la fenêtre
     mlx_put_image_to_window(g->mlx, g->win, g->img, 0, 0);
+
     return (0);
 }
 
-double lancer_rayon(t_game *g, double angle)
+t_hit lancer_rayon(t_game *g, double angle)
 {
-    // temporaire : renvoie une distance fixe
-    return 200;
-}
-int calculer_hauteur(double distance)
-{
-    return 300; // temporaire
-}
-void dessiner_colonne(t_game *g, int col, int height)
-{
-    int start = 300 - height / 2;
-    int end = 300 + height / 2;
+    t_hit h;
 
-    for (int y = start; y < end; y++)
-        put_pixel(g, col, y, 0x00AAAAAA);
+    double ray_x = g->player_x;
+    double ray_y = g->player_y;
+
+    double dx = cos(angle);
+    double dy = sin(angle);
+
+    while (1)
+    {
+        ray_x += dx;
+        ray_y += dy;
+
+        int mx = (int)(ray_x / g->tile_size);
+        int my = (int)(ray_y / g->tile_size);
+
+        if (g->map[my][mx] == '1')
+        {
+            h.distance = sqrt(
+                (ray_x - g->player_x) * (ray_x - g->player_x) +
+                (ray_y - g->player_y) * (ray_y - g->player_y)
+            );
+
+            h.hit_x = ray_x;
+            h.hit_y = ray_y;
+
+            double local_x = fmod(ray_x, g->tile_size);
+            double local_y = fmod(ray_y, g->tile_size);
+
+            if (local_x < 1)
+                h.face = 2; // WE
+            else if (local_x > g->tile_size - 1)
+                h.face = 3; // EA
+            else if (local_y < 1)
+                h.face = 0; // NO
+            else
+                h.face = 1; // SO
+
+            return h;
+        }
+    }
 }
+
+
+void dessiner_colonne(t_game *g, int col, int height, t_hit hit)
+{
+    int top = (600 - height) / 2;
+    int bottom = top + height;
+
+    // plafond
+    for (int y = 0; y < top; y++)
+        put_pixel(g, col, y, 0x00333333);
+
+    // calcul texture_x
+    int texture_x;
+    if (hit.face == 0 || hit.face == 1) // NO / SO
+        texture_x = (int)(fmod(hit.hit_x, g->tile_size) * g->tex_w / g->tile_size);
+    else // WE / EA
+        texture_x = (int)(fmod(hit.hit_y, g->tile_size) * g->tex_w / g->tile_size);
+
+    // mur texturé
+    for (int y = top; y < bottom; y++)
+    {
+        double tex_y_ratio = (double)(y - top) / height;
+        int texture_y = (int)(tex_y_ratio * g->tex_h);
+
+        char *tex_addr;
+        if (hit.face == 0) tex_addr = g->addr_no;
+        else if (hit.face == 1) tex_addr = g->addr_so;
+        else if (hit.face == 2) tex_addr = g->addr_we;
+        else tex_addr = g->addr_ea;
+
+        int color = *(unsigned int *)(tex_addr +
+            texture_y * g->tex_line_len +
+            texture_x * (g->tex_bpp / 8));
+
+        put_pixel(g, col, y, color);
+    }
+
+    // sol
+    for (int y = bottom; y < 600; y++)
+        put_pixel(g, col, y, 0x00555555);
+}
+
 
 
 void    put_pixel(t_game *g, int x, int y, int color)
@@ -132,19 +174,20 @@ int main(void)
     g.addr = mlx_get_data_addr(g.img, &g.bpp, &g.line_len, &g.endian);
 
     // BOUCLE
+    load_textures(&g);
     mlx_loop_hook(g.mlx, render_frame, &g);
     mlx_loop(g.mlx);
 
     return (0);
 }
-void load_textures (t_game g)
+void load_textures (t_game *g)
 {
-    g.tex_no = mlx_xpm_file_to_image(g.mlx, "NO.xpm", &g.tex_w, &g.tex_h);
-    g.addr_no = mlx_get_data_addr(g.tex_no, &g.tex_bpp, &g.tex_line_len, &g.tex_endian);
-    g.tex_so = mlx_xpm_file_to_image(g.mlx, "SO.xpm", &g.tex_w, &g.tex_h);
-    g.addr_so = mlx_get_data_addr(g.tex_so, &g.tex_bpp, &g.tex_line_len, &g.tex_endian);
-    g.tex_we = mlx_xpm_file_to_image(g.mlx, "WE.xpm", &g.tex_w, &g.tex_h);
-    g.addr_we = mlx_get_data_addr(g.tex_we, &g.tex_bpp, &g.tex_line_len, &g.tex_endian);
-    g.tex_ea = mlx_xpm_file_to_image(g.mlx, "EA.xpm", &g.tex_w, &g.tex_h);
-    g.addr_ea = mlx_get_data_addr(g.tex_ea, &g.tex_bpp, &g.tex_line_len, &g.tex_endian);
+    g.tex_no = mlx_xpm_file_to_image(g->mlx, "NO.xpm", &g->tex_w, &g->tex_h);
+    g.addr_no = mlx_get_data_addr(g->tex_no, &g->tex_bpp, &g->tex_line_len, &g->tex_endian);
+    g.tex_so = mlx_xpm_file_to_image(g->mlx, "SO.xpm", &g->tex_w, &g->tex_h);
+    g.addr_so = mlx_get_data_addr(g->tex_so, &g->tex_bpp, &g->tex_line_len, &g->tex_endian);
+    g.tex_we = mlx_xpm_file_to_image(g->mlx, "WE.xpm", &g->tex_w, &g->tex_h);
+    g.addr_we = mlx_get_data_addr(g->tex_we, &g->tex_bpp, &g->tex_line_len, &g->tex_endian);
+    g.tex_ea = mlx_xpm_file_to_image(g->mlx, "EA.xpm", &g->tex_w, &g->tex_h);
+    g.addr_ea = mlx_get_data_addr(g->tex_ea, &g->tex_bpp, &g->tex_line_len, &g->tex_endian);
 }
