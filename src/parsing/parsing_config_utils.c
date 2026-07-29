@@ -20,7 +20,7 @@ char	*get_value(char *line, char *token)
 //: vérifie que le fichier 
 //se termine bien par .xpm. Un contrôle de badge à l'entrée.
 
-static int	has_valid_extension(char *path)
+static int	has_valid_xpm_extension(char *path)
 {
 	size_t	len;
 
@@ -40,7 +40,7 @@ static int	set_texture(char **dst, char *value)
 		free(value);
 		return (parse_error("identifiant de texture duplique"));
 	}
-	if (!has_valid_extension(value))
+	if (!has_valid_xpm_extension(value))
 	{
 		free(value);
 		return (parse_error("le fichier de texture doit etre en .xpm"));
