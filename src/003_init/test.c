@@ -1,5 +1,8 @@
 #include "../../include/cub3d.h"
 
+// Ici c'est un main. Il y aura pas mal de choses à passer dans le main principale, mais la
+// plupart sera à jeter. C'est pour que je puisse tester mon raycasting :)
+
 int main(void)
 {
     t_game g;
@@ -23,6 +26,8 @@ int main(void)
     g.player_y = 3 * g.tile_size;
     g.player_angle = 0;
 
+    g.win_width = 800;
+    g.win_height = 600;
     // FOV dynamique (pour zoom/dézoom)
     g.fov = 60 * (M_PI / 180);
 

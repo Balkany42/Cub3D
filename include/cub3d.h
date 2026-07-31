@@ -23,6 +23,9 @@ typedef struct s_game
     int     line_len; // Nombre d'octet par ligne dans l'image
     int     endian; // A priori on va pas l'utiliser
 
+    int     win_width; // La largeur en pixels de la fenètre
+    int     win_height; // La hauteur en piwels de la fenètre
+
     void *tex_no; // Texture NO
     void *tex_so; // Texture SO
     void *tex_we; // Texture WE
