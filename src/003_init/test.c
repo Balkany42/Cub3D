@@ -23,6 +23,9 @@ int main(void)
     g.player_y = 3 * g.tile_size;
     g.player_angle = 0;
 
+    // FOV dynamique (pour zoom/dézoom)
+    g.fov = 60 * (M_PI / 180);
+
     // INIT MLX
     g.mlx = mlx_init();
     g.win = mlx_new_window(g.mlx, 800, 600, "Cub3D test");
@@ -30,11 +33,15 @@ int main(void)
     g.img = mlx_new_image(g.mlx, 800, 600);
     g.addr = mlx_get_data_addr(g.img, &g.bpp, &g.line_len, &g.endian);
 
-    // BOUCLE
+    // TEXTURES
     load_textures(&g);
-    mlx_hook(g.win, 2, 1L<<0, key_press, &g);
-    mlx_loop_hook(g.mlx, render_frame, &g);
-    mlx_loop(g.mlx);
 
+    // HOOKS
+    mlx_hook(g.win, 2, 1L<<0, key_press, &g);   // clavier
+    mlx_hook(g.win, 17, 0, close_window, &g);  // croix rouge
+    mlx_loop_hook(g.mlx, render_frame, &g);    // rendu
+
+    mlx_loop(g.mlx);
     return (0);
 }
+

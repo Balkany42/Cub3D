@@ -7,9 +7,9 @@
 #include "mlx/mlx.h"
 #include <stdlib.h>
 
-#ifndef M_PI
+#ifndef M_PI // Peut être redondant à vérifier
 #define M_PI 3.14159265358979323846
-#endif
+#endif // Peut être redondant à vérifier
 
 #define FOV (60 * (M_PI / 180))
 
@@ -48,6 +48,7 @@ typedef struct s_game
     double  player_y; // Position Y du joueur en pixel
     double  player_angle; // Angle du joueur (utilisé pour savoir dans quelle direction il regarde)
 
+    double fov; // Pour le zoom et le dézoom
 }   t_game;
 
 typedef struct s_hit
@@ -66,5 +67,6 @@ int render_frame(t_game *g);
 void draw_column(t_game *g, int col, int height, t_hit hit);
 void    put_pixel(t_game *g, int x, int y, int color);
 int key_press(int keycode, t_game *g);
+int close_window(t_game *g);
 
 #endif

@@ -1,7 +1,5 @@
 #include "../../include/cub3d.h"
 
-#include "cub3d.h"
-
 int key_press(int keycode, t_game *g)
 {
     double move_speed = 5.0;
@@ -77,6 +75,24 @@ int key_press(int keycode, t_game *g)
 
     if (keycode == 124) // right arrow
         g->player_angle += rot_speed;
+    if (keycode == 53) // ESC
+        close_window(g);
+// Flèche HAUT → zoom
+    if (keycode == 126) // Up arrow
+    {
+        g->fov -= 0.02;
+        if (g->fov < 0.2)
+            g->fov = 0.2;
+    }
+
+// Flèche BAS → dézoom
+    if (keycode == 125) // Down arrow
+    {
+        g->fov += 0.02;
+        if (g->fov > 1.5)
+            g->fov = 1.5;
+    }
+
 
     // Normalisation de l’angle
     if (g->player_angle < 0)
@@ -84,5 +100,11 @@ int key_press(int keycode, t_game *g)
     if (g->player_angle > 2 * M_PI)
         g->player_angle -= 2 * M_PI;
 
+    return (0);
+}
+int close_window(t_game *g)
+{
+    mlx_destroy_window(g->mlx, g->win);
+    exit(0);
     return (0);
 }

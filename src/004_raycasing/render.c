@@ -14,8 +14,8 @@ int render_frame(t_game *g)
 
     for (int col = 0; col < 800; col++)
     {
-        // Angle du rayon pour cette colonne
-        double ray_angle = g->player_angle + (col - 400) * FOV / 800;
+        // Angle du rayon pour cette colonne (FOV dynamique)
+        double ray_angle = g->player_angle + (col - 400) * g->fov / 800;
 
         // Lancer le rayon → distance + face + hit_x + hit_y
         t_hit hit = launch_ray(g, ray_angle);
@@ -32,6 +32,7 @@ int render_frame(t_game *g)
 
     return (0);
 }
+
 
 void draw_column(t_game *g, int col, int height, t_hit hit)
 {
