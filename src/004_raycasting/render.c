@@ -12,13 +12,14 @@ int render_frame(t_game *g)
 {
     clear_image(g);
 
-    for (int col = 0; col < 800; col++)
+    for (int col = 0; col < g->win_width; col++)
     {
         // Angle du rayon pour cette colonne (FOV dynamique)
-        double ray_angle = g->player_angle + (col - 400) * g->fov / 800;
+        double ray_angle = g->player_angle
+            + (col - g->win_width / 2) * g->fov / g->win_width;
 
         // Lancer le rayon → distance + face + hit_x + hit_y
-        t_hit hit = launch_ray(g, ray_angle);
+        t_hit hit = launch_ray_dda(g, ray_angle);
 
         // Calculer la hauteur du mur
         int wall_height = compute_height(g, hit.distance);
@@ -34,9 +35,10 @@ int render_frame(t_game *g)
 }
 
 
+
 void draw_column(t_game *g, int col, int height, t_hit hit)
 {
-    int top = (600 - height) / 2;
+    int top = (g->win_height - height) / 2;
     int bottom = top + height;
 
     // plafond
@@ -70,9 +72,10 @@ void draw_column(t_game *g, int col, int height, t_hit hit)
     }
 
     // sol
-    for (int y = bottom; y < 600; y++)
+    for (int y = bottom; y < g->win_height; y++)
         put_pixel(g, col, y, 0x00555555);
 }
+
 
 void    put_pixel(t_game *g, int x, int y, int color)
 {

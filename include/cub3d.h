@@ -4,8 +4,9 @@
 # include <stddef.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "mlx/mlx.h"
+#include "../mlx/mlx.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 #ifndef M_PI // Peut être redondant à vérifier
 #define M_PI 3.14159265358979323846
@@ -64,12 +65,13 @@ typedef struct s_hit
 
 void load_textures (t_game *g);
 int compute_height(t_game *g, double distance);
-t_hit launch_ray(t_game *g, double angle);
 void clear_image(t_game *g);
 int render_frame(t_game *g);
 void draw_column(t_game *g, int col, int height, t_hit hit);
 void    put_pixel(t_game *g, int x, int y, int color);
 int key_press(int keycode, t_game *g);
 int close_window(t_game *g);
+t_hit launch_ray_dda(t_game *g, double angle);
+void init_player(t_game *g);
 
 #endif

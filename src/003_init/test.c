@@ -7,20 +7,27 @@ int main(void)
 {
     t_game g;
 
+    printf("A\n");
+    fflush(stdout);
     // MAP CODÉE EN DUR
     g.map = (char *[]){
         "111111",
         "100001",
-        "100001",
+        "100N01",
         "100001",
         "100001",
         "111111",
         NULL
     };
-
+    printf("B\n");
+    fflush(stdout);
     g.tile_size = 64;
     g.map_width = 6;
     g.map_height = 6;
+    init_player(&g);
+
+    printf("C\n");
+    fflush(stdout);
 
     g.player_x = 3 * g.tile_size;
     g.player_y = 3 * g.tile_size;
@@ -40,6 +47,7 @@ int main(void)
 
     // TEXTURES
     load_textures(&g);
+
 
     // HOOKS
     mlx_hook(g.win, 2, 1L<<0, key_press, &g);   // clavier

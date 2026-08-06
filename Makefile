@@ -1,35 +1,41 @@
-NAME := minishell
-NAME_BONUS := minishell_bonus
+NAME := cub3d
 CC := cc
 CFLAGS := -Wall -Werror -Wextra -g3
 
 SRC := \
-src/001_main/
-
-SRC_BONUS := \
+src/003_init/init_textures.c \
+src/003_init/test.c \
+src/004_raycasting/raycasting.c \
+src/004_raycasting/render.c \
+src/005_movement/movement.c \
+src/utils/utils1.c
 
 OBJ := $(SRC:.c=.o)
-OBJ_BONUS := $(SRC_BONUS:.c=.o)
+
+# === MLX ===
+MLX_DIR := mlx
+MLX := $(MLX_DIR)/libmlx_Linux.a
+
+# === INCLUDES ===
+INCLUDES := -Iinclude -I$(MLX_DIR)
+
+# === LIBS ===
+LIBS := $(MLX) -lXext -lX11 -lm -lz
 
 all: $(NAME)
 
-bonus: $(NAME_BONUS)
-
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -Iinclude $(OBJ) -lreadline -lhistory -o $(NAME)
-
-$(NAME_BONUS): $(OBJ_BONUS)
-	$(CC) $(CFLAGS) -Iinclude_bonus $(OBJ_BONUS) -lreadline -lhistory -o $(NAME_BONUS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJ) $(LIBS) -o $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(OBJ_BONUS)
+	rm -f $(OBJ)
 
 fclean: clean
-	rm -f $(NAME) $(NAME_BONUS)
+	rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re

@@ -1,4 +1,5 @@
 #include "../../include/cub3d.h"
+#define COLLISION_PAD 10.0
 
 int key_press(int keycode, t_game *g)
 {
@@ -11,10 +12,15 @@ int key_press(int keycode, t_game *g)
         double nx = g->player_x + cos(g->player_angle) * move_speed;
         double ny = g->player_y + sin(g->player_angle) * move_speed;
 
-        int mx = (int)(nx / g->tile_size);
-        int my = (int)(ny / g->tile_size);
+        int nx_case = (int)(nx / g->tile_size);
+        int ny_case = (int)(ny / g->tile_size);
 
-        if (g->map[my][mx] != '1')
+// Vérification avec padding
+        if (g->map[ny_case][nx_case] != '1' &&
+            g->map[(int)((ny + COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[(int)((ny - COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[ny_case][(int)((nx + COLLISION_PAD) / g->tile_size)] != '1' &&
+            g->map[ny_case][(int)((nx - COLLISION_PAD) / g->tile_size)] != '1')
         {
             g->player_x = nx;
             g->player_y = ny;
@@ -27,10 +33,14 @@ int key_press(int keycode, t_game *g)
         double nx = g->player_x - cos(g->player_angle) * move_speed;
         double ny = g->player_y - sin(g->player_angle) * move_speed;
 
-        int mx = (int)(nx / g->tile_size);
-        int my = (int)(ny / g->tile_size);
+        int nx_case = (int)(nx / g->tile_size);
+        int ny_case = (int)(ny / g->tile_size);
 
-        if (g->map[my][mx] != '1')
+        if (g->map[ny_case][nx_case] != '1' &&
+            g->map[(int)((ny + COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[(int)((ny - COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[ny_case][(int)((nx + COLLISION_PAD) / g->tile_size)] != '1' &&
+            g->map[ny_case][(int)((nx - COLLISION_PAD) / g->tile_size)] != '1')
         {
             g->player_x = nx;
             g->player_y = ny;
@@ -43,10 +53,14 @@ int key_press(int keycode, t_game *g)
         double nx = g->player_x - cos(g->player_angle + M_PI/2) * move_speed;
         double ny = g->player_y - sin(g->player_angle + M_PI/2) * move_speed;
 
-        int mx = (int)(nx / g->tile_size);
-        int my = (int)(ny / g->tile_size);
+        int nx_case = (int)(nx / g->tile_size);
+        int ny_case = (int)(ny / g->tile_size);
 
-        if (g->map[my][mx] != '1')
+        if (g->map[ny_case][nx_case] != '1' &&
+            g->map[(int)((ny + COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[(int)((ny - COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[ny_case][(int)((nx + COLLISION_PAD) / g->tile_size)] != '1' &&
+            g->map[ny_case][(int)((nx - COLLISION_PAD) / g->tile_size)] != '1')
         {
             g->player_x = nx;
             g->player_y = ny;
@@ -59,10 +73,14 @@ int key_press(int keycode, t_game *g)
         double nx = g->player_x + cos(g->player_angle + M_PI/2) * move_speed;
         double ny = g->player_y + sin(g->player_angle + M_PI/2) * move_speed;
 
-        int mx = (int)(nx / g->tile_size);
-        int my = (int)(ny / g->tile_size);
+        int nx_case = (int)(nx / g->tile_size);
+        int ny_case = (int)(ny / g->tile_size);
 
-        if (g->map[my][mx] != '1')
+        if (g->map[ny_case][nx_case] != '1' &&
+            g->map[(int)((ny + COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[(int)((ny - COLLISION_PAD) / g->tile_size)][nx_case] != '1' &&
+            g->map[ny_case][(int)((nx + COLLISION_PAD) / g->tile_size)] != '1' &&
+            g->map[ny_case][(int)((nx - COLLISION_PAD) / g->tile_size)] != '1')
         {
             g->player_x = nx;
             g->player_y = ny;
