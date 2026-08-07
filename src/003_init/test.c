@@ -7,28 +7,39 @@ int main(void)
 {
     t_game g;
 
-    printf("A\n");
-    fflush(stdout);
     // MAP CODÉE EN DUR
-    g.map = (char *[]){
-        "111111",
-        "100001",
-        "100N01",
-        "100001",
-        "100001",
-        "111111",
+    // char *tmp_map[] = {
+    //     "1111111111111111",
+    //     "1000000000000001",
+    //     "100N000000000001",
+    //     "1000000000000001",
+    //     "1000000000000001",
+    //     "1111111111111111",
+    //     NULL
+    // };
+        char *tmp_map[] = {
+        "1111111111111111",
+        "1000000000000001",
+        "100N000000000001",
+        "1000000000000001",
+        "1000000000000001",
+        "1111111111111111",
         NULL
     };
-    printf("B\n");
-    fflush(stdout);
+    int h = 0;
+    while (tmp_map[h])
+        h++;
+
+    g.map = malloc(sizeof(char *) * (h + 1));
+
+    for (int i = 0; i < h; i++)
+        g.map[i] = strdup(tmp_map[i]);
+
+    g.map[h] = NULL;
     g.tile_size = 64;
-    g.map_width = 6;
+    g.map_width = 16;
     g.map_height = 6;
     init_player(&g);
-
-    printf("C\n");
-    fflush(stdout);
-
     g.player_x = 3 * g.tile_size;
     g.player_y = 3 * g.tile_size;
     g.player_angle = 0;

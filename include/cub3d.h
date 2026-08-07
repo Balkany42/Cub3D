@@ -7,6 +7,7 @@
 #include "../mlx/mlx.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifndef M_PI // Peut être redondant à vérifier
 #define M_PI 3.14159265358979323846
@@ -45,7 +46,7 @@ typedef struct s_game
 
     char    **map; // La map en tableau de chaînes
     int     map_width; // La largeur de la map en cases
-    int     map_height; // La heuteur de la map en cases
+    int     map_height; // La hauteur de la map en cases
     int     tile_size; // Taille d'un bloc
 
     double  player_x; // Position X du joueur en pixel

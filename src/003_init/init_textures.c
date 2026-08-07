@@ -14,16 +14,10 @@ void load_textures (t_game *g)
 
 void init_player(t_game *g)
 {
-    printf("0\n");
-    fflush(stdout);
     for (int y = 0; g->map[y]; y++)
     {
-        printf("1\n");
-        fflush(stdout);
         for (int x = 0; g->map[y][x]; x++)
         {
-            printf("2\n");
-            fflush(stdout);
             char c = g->map[y][x];
 
             if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
@@ -46,12 +40,6 @@ void init_player(t_game *g)
                 g->map[y][x] = '0';
                 return;
             }
-            printf("3\n");
-            fflush(stdout);
         }
-        printf("4\n");
-        fflush(stdout);
     }
-    printf("5\n");
-    fflush(stdout);
 }
