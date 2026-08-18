@@ -1,78 +1,113 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include <stddef.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include "../mlx/mlx.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+# include "../minilibx-linux/mlx.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <math.h>
+# include <sys/time.h>
 
-#ifndef M_PI // Peut être redondant à vérifier
-#define M_PI 3.14159265358979323846
-#endif // Peut être redondant à vérifier
+# define WIN_WIDTH  1024
+# define WIN_HEIGHT 768
+# define TILE_SIZE  64      /* taille d'une case de map, en "unités monde" */
+# define MOVE_SPEED 3.0     /* cases par seconde */
+# define ROT_SPEED  2.2     /* radians par seconde */
+# define FOV_FACTOR 0.66    /* longueur du plan caméra -> ~66° de FOV */
 
-#define FOV (60 * (M_PI / 180))
+# define MM_TILE 8    /* taille d'une case sur la minimap, en pixels */
+# define MM_PAD  12   /* marge depuis le bord de l'écran */
+# define WALL_MARGIN 0.2
+
+# define RED	"\e[31m"
+# define GREEN	"\e[32m"
+
+# define KEY_SPACE  32
+# define KEY_A      97
+# define KEY_D      100
+# define KEY_S      115
+# define KEY_W      119
+# define KEY_ESC    65307
+# define KEY_LEFT   65361
+# define KEY_UP     65362
+# define KEY_RIGHT  65363
+# define KEY_DOWN   65364
+
+typedef struct s_img
+{
+	void	*img;        // Le mlx l'utilise pour savoir quelle image manipuler
+	char	*addr;       // Adresse du premier pixel dans la mémoire de l'image
+	int		bpp;         /* bits per pixel */
+	int		line_len;    /* octets par ligne */
+	int		endian;      // On ne l'utilise pas dans Cub3d, mais la mlx le donne
+	int		width;       // Largeur de l'image en pixels
+	int		height;      // Hauteur de l'image en pixels
+}	t_img;
+
+typedef struct s_player
+{
+	double	x;
+	double	y;
+	double	dir_x;      /* vecteur direction (où regarde le joueur) */
+	double	dir_y;
+	double	plane_x;    /* vecteur "plan caméra", perpendiculaire à dir */
+	double	plane_y;    /* sa longueur fixe le champ de vision (FOV)   */
+}	t_player;
+
+typedef struct s_map
+{
+	char	**grid;
+	int		width;      /* largeur max (en cases) */
+	int		height;     /* nombre de lignes */
+	char	*no_path;
+	char	*so_path;
+	char	*we_path;
+	char	*ea_path;
+	int		floor_color;
+	int		ceil_color;
+}	t_map;
+
+typedef struct s_ray
+{
+	double	ray_dir_x;
+	double	ray_dir_y;
+	int		map_x;
+	int		map_y;
+	double	side_dist_x;
+	double	side_dist_y;
+	double	delta_dist_x;
+	double	delta_dist_y;
+	int		step_x;
+	int		step_y;
+	int		side;
+	double	perp_wall_dist;
+}	t_ray;
 
 typedef struct s_game
 {
-    void    *mlx; // Contien la minilibx
-    void    *win; // La fenêtre mlx
-    void    *img; //Load l'image dans laquelle on dessine
-    char    *addr; // Adresse de début de l'image
-    int     bpp; // Bits par pixel
-    int     line_len; // Nombre d'octet par ligne dans l'image
-    int     endian; // A priori on va pas l'utiliser
+	void		*mlx;
+	void		*win;
+	t_img		screen;     /* buffer dans lequel on dessine chaque frame */
+	t_img		tex[4];     /* index : 0=NO 1=SO 2=WE 3=EA (cf. enum ci-dessous) */
+	t_map		map;
+	t_player	player;
 
-    int     win_width; // La largeur en pixels de la fenètre
-    int     win_height; // La hauteur en piwels de la fenètre
+	int			keys[65536]; /* état courant des touches (pressed = 1) */
 
-    void *tex_no; // Texture NO
-    void *tex_so; // Texture SO
-    void *tex_we; // Texture WE
-    void *tex_ea; // Texture EA
+	double		last_time;   /* pour calculer le delta-time du mouvement */
+}	t_game;
 
-    char *addr_no; // Adresse du buffer NO
-    char *addr_so; // Adresse du buffer SO
-    char *addr_we; // Adresse du buffer WE
-    char *addr_ea; // Adresse du buffer ea
-
-    int tex_w; // Largeur des textures
-    int tex_h; // Hauteur des textures
-    int tex_bpp; // Bits par pixel des textures
-    int tex_line_len; // Octet par ligne dans les textures
-    int tex_endian; // Pas utilisé ici non plus
-
-    char    **map; // La map en tableau de chaînes
-    int     map_width; // La largeur de la map en cases
-    int     map_height; // La hauteur de la map en cases
-    int     tile_size; // Taille d'un bloc
-
-    double  player_x; // Position X du joueur en pixel
-    double  player_y; // Position Y du joueur en pixel
-    double  player_angle; // Angle du joueur (utilisé pour savoir dans quelle direction il regarde)
-
-    double fov; // Pour le zoom et le dézoom
-}   t_game;
-
-typedef struct s_hit
+enum e_tex
 {
-    double distance;
-    double hit_x;
-    double hit_y;
-    int face; // 0=NO, 1=SO, 2=WE, 3=EA
-} t_hit;
+	TEX_NO = 0,
+	TEX_SO = 1,
+	TEX_WE = 2,
+	TEX_EA = 3
+};
 
-void load_textures (t_game *g);
-int compute_height(t_game *g, double distance);
-void clear_image(t_game *g);
-int render_frame(t_game *g);
-void draw_column(t_game *g, int col, int height, t_hit hit);
-void    put_pixel(t_game *g, int x, int y, int color);
-int key_press(int keycode, t_game *g);
-int close_window(t_game *g);
-t_hit launch_ray_dda(t_game *g, double angle);
-void init_player(t_game *g);
+int	render_loop(t_game *game);
+int	key_press(int keycode, t_game *game);
+int	key_release(int keycode, t_game *game);
 
 #endif
