@@ -20,6 +20,10 @@
 # define MM_PAD  12   /* marge depuis le bord de l'écran */
 # define WALL_MARGIN 0.2
 
+#ifndef BONUS
+# define BONUS 0
+#endif
+
 # define RED	"\e[31m"
 # define GREEN	"\e[32m"
 
@@ -45,6 +49,18 @@ typedef struct s_img
 	int		height;      // Hauteur de l'image en pixels
 }	t_img;
 
+// typedef struct s_config
+// {
+// 	char	*no;
+// 	char	*so;
+// 	char	*we;
+// 	char	*ea;
+// 	int		f[3];
+// 	int		c[3];
+// 	int		f_set;
+// 	int		c_set;
+// } t_config;
+
 typedef struct s_player
 {
 	double	x;
@@ -64,6 +80,8 @@ typedef struct s_map
 	char	*so_path;
 	char	*we_path;
 	char	*ea_path;
+	int		f[3];
+	int		c[3];
 	int		floor_color;
 	int		ceil_color;
 }	t_map;
