@@ -2,6 +2,7 @@
 # define CUB3D_H
 
 # include "../minilibx-linux/mlx.h"
+# include "libft.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -15,6 +16,10 @@
 # define MOVE_SPEED 3.0     /* cases par seconde */
 # define ROT_SPEED  2.2     /* radians par seconde */
 # define FOV_FACTOR 0.66    /* longueur du plan caméra -> ~66° de FOV */
+
+# define ZOOM_SPEED 1.0   /* vitesse de zoom, en facteur par seconde */
+# define FOV_MIN    0.20  /* longueur mini du plan camera (zoom max) */
+# define FOV_MAX    1.20  /* longueur maxi du plan camera (dezoom max) */
 
 # define MM_TILE 8    /* taille d'une case sur la minimap, en pixels */
 # define MM_PAD  12   /* marge depuis le bord de l'écran */
@@ -37,6 +42,7 @@
 # define KEY_UP     65362
 # define KEY_RIGHT  65363
 # define KEY_DOWN   65364
+# define MOUSE_SENSITIVITY 0.0003
 
 typedef struct s_img
 {
@@ -80,6 +86,8 @@ typedef struct s_map
 	char	*so_path;
 	char	*we_path;
 	char	*ea_path;
+	int		f_set;
+	int		c_set;
 	int		f[3];
 	int		c[3];
 	int		floor_color;
@@ -124,8 +132,35 @@ enum e_tex
 	TEX_EA = 3
 };
 
-int	render_loop(t_game *game);
-int	key_press(int keycode, t_game *game);
-int	key_release(int keycode, t_game *game);
+   void    free_table(char **table);
+   int     has_valid_extension(char *filename);
+   int     check_file(char *filename);
+   char    **read_file(char *path);
+   int     parse(char **lines, t_map *map, t_player *player);
+   int     parse_config(t_map *map, char **lines, int *i);
+   int     parse_map(t_map *map, char **lines, int start);
+   int     check_map(t_map *map, t_player *player);
+   int     parse_error(char *msg);
+   int     match_token(char *line, char *token);
+   char    *get_value(char *line, char *token);
+   int     try_texture_token(t_map *map, char *line, int *handled);
+   int     try_color_token(t_map *map, char *line, int *handled);
+   int     config_is_complete(t_map *map);
+   int     parse_component(char *str, int *out);
+   void    free_map(t_map *map);
+   void    free_all(t_game *game);
+   int     init_game(t_game *game);
+   void    load_textures(t_game *game);
+   double  now_seconds(void);
+   void    put_pixel(t_img *img, int x, int y, int color);
+   int     get_tex_pixel(t_img *tex, int x, int y);
+   void    render_floor_ceiling(t_game *game);
+   void    draw_minimap(t_game *game);
+   void    move_player(t_game *game, double dt);
+   int		key_press(int keycode, t_game *game);
+   int	key_release(int keycode, t_game *game);
+   int	render_loop(t_game *game);
+   void	rotate_player(t_game *game, double angle);
+   int	mouse_hook(int x, int y, t_game *game);
 
 #endif

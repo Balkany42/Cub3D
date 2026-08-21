@@ -14,7 +14,7 @@
 
 int	ft_isascii(size_t c)
 {
-	return (c >= 0 && c <= 127);
+	return (c <= 127);
 }
 /*
 #include <stdio.h>

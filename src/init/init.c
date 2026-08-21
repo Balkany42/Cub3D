@@ -1,10 +1,10 @@
-#include "../../include/cub3d.h"
+#include "cub3d.h"
 
 static void	new_img(void *mlx, t_img *img, int width, int height)
 {
 	img->img = mlx_new_image(mlx, width, height);
 	if (!img->img)
-		die("mlx_new_image failed");
+		parse_error("mlx_new_image failed");
 	img->addr = mlx_get_data_addr(img->img, &img->bpp, &img->line_len,
 			&img->endian);
 	img->width = width;
@@ -22,15 +22,16 @@ int	init_game(t_game *game)
 {
 	game->mlx = mlx_init();
 	if (!game->mlx)
-		die("mlx_init failed");
+		parse_error("mlx_init failed");
 	game->win = mlx_new_window(game->mlx, WIN_WIDTH, WIN_HEIGHT, "cub3D");
 	if (!game->win)
-		die("mlx_new_window failed");
+		parse_error("mlx_new_window failed");
 	new_img(game->mlx, &game->screen, WIN_WIDTH, WIN_HEIGHT);
 	load_textures(game);
 	mlx_hook(game->win, 17, 0, close_win, game); /* clic sur la croix */
 	mlx_hook(game->win, 2, 1L << 0, key_press, game);   /* KeyPress   */
 	mlx_hook(game->win, 3, 1L << 1, key_release, game); /* KeyRelease */
+	mlx_hook(game->win, 6, 1L << 6, mouse_hook, game);
 	return (0);
 }
 static void	load_one(void *mlx, t_img *tex, char *path)
@@ -40,7 +41,7 @@ static void	load_one(void *mlx, t_img *tex, char *path)
 
 	tex->img = mlx_xpm_file_to_image(mlx, path, &w, &h);
 	if (!tex->img)
-		die("failed to load texture (check the path in NO/SO/WE/EA)");
+		parse_error("failed to load texture (check the path in NO/SO/WE/EA)");
 	tex->width = w;
 	tex->height = h;
 	tex->addr = mlx_get_data_addr(tex->img, &tex->bpp, &tex->line_len,

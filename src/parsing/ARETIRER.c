@@ -1,4 +1,4 @@
-#include "../../include/cub3d.h"
+#include "cub3d.h"
 
 int check_arg(int argc, char**argv)
 {

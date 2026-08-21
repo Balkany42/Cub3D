@@ -21,7 +21,7 @@ char	*ft_itoa(int n)
 	char		*str;
 
 	nb = n;
-		compteur = ft_compteur(nb);
+	compteur = ft_compteur(nb);
 	if (nb < 0)
 		nb = -nb;
 	str = (char *)malloc((sizeof (char)) * (compteur + 1));

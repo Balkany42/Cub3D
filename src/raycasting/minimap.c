@@ -1,4 +1,4 @@
-#include "../../include/cub3d.h"
+#include "cub3d.h"
 
 static void	fill_cell(t_img *img, int px, int py, int color)
 {

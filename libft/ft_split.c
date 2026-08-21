@@ -24,8 +24,8 @@ char	**ft_split(char const *s, char c)
 
 	i = 0;
 	k = 0;
-	if(!s)
-		return(NULL);
+	if (!s)
+		return (NULL);
 	tab = (char **)malloc(sizeof(char *) * ((ft_count_words(s, c) + 1)));
 	if (tab == NULL)
 		return (NULL);
@@ -37,10 +37,7 @@ char	**ft_split(char const *s, char c)
 			break ;
 		tab[k] = ft_split2 (s, c, &i);
 		if (tab[k] == NULL)
-		{
-			ft_free(tab, k);
-			return (NULL);
-		}
+			return (ft_free(tab, k), NULL);
 		k++;
 	}
 	tab[k] = (NULL);
@@ -66,9 +63,6 @@ static char	*ft_split2(const char *s, char c, size_t *i)
 
 static void	ft_free(char **tab, size_t count)
 {
-	size_t	i;
-
-	i = count;
 	while (count > 0)
 	{
 		count--;

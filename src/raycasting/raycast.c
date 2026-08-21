@@ -1,4 +1,4 @@
-#include "../../include/cub3d.h"
+#include "cub3d.h"
 
 static t_ray	setup_ray(t_game *game, int x)
 {

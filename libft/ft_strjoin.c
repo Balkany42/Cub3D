@@ -28,13 +28,13 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	while (s1[i] != '\0')
 	{
 		p[i] = s1[i];
-	i++;
+		i++;
 	}
 	i = 0;
 	while (s2[i] != '\0')
 	{
-	p[i + ft_strlen(s1)] = s2[i];
-	i++;
+		p[i + ft_strlen(s1)] = s2[i];
+		i++;
 	}
 	p[j] = '\0';
 	return (p);
