@@ -82,20 +82,20 @@ void	move_player(t_game *game, double dt)
 	speed = MOVE_SPEED * dt;
 	right_x = -p->dir_y;
 	right_y = p->dir_x;
-	if (game->keys[KEY_W])
+	if (game->keys.w)
 		try_move(game, p->dir_x * speed, p->dir_y * speed);
-	if (game->keys[KEY_S])
+	if (game->keys.s)
 		try_move(game, -p->dir_x * speed, -p->dir_y * speed);
-	if (game->keys[KEY_D])
+	if (game->keys.d)
 		try_move(game, right_x * speed, right_y * speed);
-	if (game->keys[KEY_A])
+	if (game->keys.a)
 		try_move(game, -right_x * speed, -right_y * speed);
-	if (game->keys[KEY_LEFT])
+	if (game->keys.left)
 		rotate_player(game, -ROT_SPEED * dt);
-	if (game->keys[KEY_RIGHT])
+	if (game->keys.right)
 		rotate_player(game, ROT_SPEED * dt);
-	if (BONUS && game->keys[KEY_UP])
+	if (BONUS && game->keys.up)
 		zoom_player(game, 1.0 - ZOOM_SPEED * dt);
-	if (BONUS && game->keys[KEY_DOWN])
+	if (BONUS && game->keys.down)
 		zoom_player(game, 1.0 + ZOOM_SPEED * dt);
 }

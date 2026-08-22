@@ -77,15 +77,15 @@ static char	**build_grid(char **lines, int start, int width, int height)
 
 // Utilisée
 
-int	parse_map(t_map *map, char **lines, int start)
+int	parse_map(t_game *game, char **lines, int start)
 {
-	map->height = get_map_height(lines, start);
-	if (map->height == 0)
-		return (parse_error("map vide"));
-	map->width = get_map_width(lines, start, map->height);
-	map->grid = build_grid(lines, start, map->width, map->height);
-	if (!map->grid)
-		return (parse_error("echec allocation de la map"));
+	game->map.height = get_map_height(lines, start);
+	if (game->map.height == 0)
+		return (parse_error(game, "map vide"));
+	game->map.width = get_map_width(lines, start, game->map.height);
+	game->map.grid = build_grid(lines, start, game->map.width, game->map.height);
+	if (!game->map.grid)
+		return (parse_error(game, "echec allocation de la map"));
 	return (0);
 }
 // Utilisée

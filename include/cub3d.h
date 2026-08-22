@@ -54,7 +54,21 @@ typedef struct s_img
 	int		height;      // Hauteur de l'image en pixels
 }	t_img;
 
-typedef struct s_player
+typedef struct s_keys
+{
+	int w;
+	int a;
+	int s;
+	int d;
+	int space;
+	int up;
+	int down;
+	int left;
+	int right;
+	int esc;
+}	t_keys;
+
+typedef	struct s_player
 {
 	double	x;
 	double	y;
@@ -105,7 +119,7 @@ typedef struct s_game
 	t_img		tex[4];     /* index : 0=NO 1=SO 2=WE 3=EA (cf. enum ci-dessous) */
 	t_map		map;
 	t_player	player;
-	int			keys[65536]; /* état courant des touches (pressed = 1) */
+	t_keys		keys;
 	double		last_time;   /* pour calculer le delta-time du mouvement */
 }	t_game;
 
@@ -121,15 +135,15 @@ enum e_tex
    int     has_valid_extension(char *filename);
    int     check_file(char *filename);
    char    **read_file(char *path);
-   int     parse(char **lines, t_map *map, t_player *player);
-   int     parse_config(t_map *map, char **lines, int *i);
-   int     parse_map(t_map *map, char **lines, int start);
-   int     check_map(t_map *map, t_player *player);
-   int     parse_error(char *msg);
+	int parse(char **lines, t_game *game);
+int     parse_config(t_game *game, char **lines, int *i);
+   int     parse_map(t_game *game, char **lines, int start);
+   int     check_map(t_game *game);
+	int	parse_error(t_game *game, char *msg);
    int     match_token(char *line, char *token);
    char    *get_value(char *line, char *token);
-   int     try_texture_token(t_map *map, char *line, int *handled);
-   int     try_color_token(t_map *map, char *line, int *handled);
+int	try_texture_token(t_game *game, char *line, int *handled);
+int	try_color_token(t_game *game, char *line, int *handled);
    int     config_is_complete(t_map *map);
    int     parse_component(char *str, int *out);
    void    free_map(t_map *map);

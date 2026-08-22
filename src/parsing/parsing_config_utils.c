@@ -27,29 +27,29 @@ static int	has_valid_xpm_extension(char *path)
 
 // Utilisée
 
-static int	set_texture(char **dst, char *value)
+static int	set_texture(t_game *game, char **dst, char *value)
 {
 	if (*dst != NULL)
 	{
 		free(value);
-		return (parse_error("identifiant de texture duplique"));
+		return (parse_error(game, "identifiant de texture duplique"));
 	}
 	if (!has_valid_xpm_extension(value))
 	{
 		free(value);
-		return (parse_error("le fichier de texture doit etre en .xpm"));
+		return (parse_error(game, "le fichier de texture doit etre en .xpm"));
 	}
 	if (access(value, F_OK | R_OK) != 0)
 	{
 		free(value);
-		return (parse_error("fichier de texture introuvable ou illisible"));
+		return (parse_error(game, "fichier de texture introuvable ou illisible"));
 	}
 	*dst = value;
 	return (0);
 }
 // Utilisée
 
-int	try_texture_token(t_map *map, char *line, int *handled)
+int	try_texture_token(t_game *game, char *line, int *handled)
 {
 	char	*value;
 
@@ -68,14 +68,14 @@ int	try_texture_token(t_map *map, char *line, int *handled)
 		return (0);
 	}
 	if (!value)
-		return (parse_error("valeur manquante pour un identifiant de texture"));
+		return (parse_error(game, "valeur manquante pour un identifiant de texture"));
 	if (line[0] == 'N')
-		return (set_texture(&map->no_path, value));
+		return (set_texture(game, &game->map.no_path, value));
 	if (line[0] == 'S')
-		return (set_texture(&map->so_path, value));
+		return (set_texture(game, &game->map.so_path, value));
 	if (line[0] == 'W')
-		return (set_texture(&map->we_path, value));
-	return (set_texture(&map->ea_path, value));
+		return (set_texture(game, &game->map.we_path, value));
+	return (set_texture(game, &game->map.ea_path, value));
 }
 
 //Utilisée

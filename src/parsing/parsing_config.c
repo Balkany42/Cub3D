@@ -51,37 +51,37 @@ int	match_token(char *line, char *token)
 
 // Utilisée
 
-int	parse_config_line(t_map *map, char *line)
+int	parse_config_line(t_game *game, char *line)
 {
 	int	ret;
 	int	handled;
 
 	if (is_blank(line))
 		return (0);
-	ret = try_texture_token(map, line, &handled);
+	ret = try_texture_token(game, line, &handled);
 	if (handled)
 		return (ret);
-	ret = try_color_token(map, line, &handled);
+	ret = try_color_token(game, line, &handled);
 	if (handled)
 		return (ret);
-	return (parse_error("identifiant inconnu ou mal forme dans la config"));
+	return (parse_error(game, "identifiant inconnu ou mal forme dans la config"));
 }
 
 //Utilisée
 
 
-int	parse_config(t_map *map, char **lines, int *i)
+int	parse_config(t_game *game, char **lines, int *i)
 {
 	while (lines[*i] && !is_map_line(lines[*i]))
 	{
-		if (parse_config_line(map, lines[*i]))
+		if (parse_config_line(game, lines[*i]))
 			return (1);
 		(*i)++;
 	}
 	if (!lines[*i])
-		return (parse_error("aucune map trouvee dans le fichier"));
-	if (!config_is_complete(map))
-		return (parse_error("un ou plusieurs identifiants de config manquants"));
+		return (parse_error(game, "aucune map trouvee dans le fichier"));
+	if (!config_is_complete(&game->map))
+		return (parse_error(game, "un ou plusieurs identifiants de config manquants"));
 	return (0);
 }
 
