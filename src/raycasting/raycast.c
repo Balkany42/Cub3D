@@ -150,7 +150,8 @@ void	render_frame(t_game *game)
 		cast_column(game, x);
 		x++;
 	}
-	draw_minimap(game);
+	if (BONUS)
+		draw_minimap(game);
 	mlx_put_image_to_window(game->mlx, game->win, game->screen.img, 0, 0);
 }
 

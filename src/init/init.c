@@ -31,7 +31,8 @@ int	init_game(t_game *game)
 	mlx_hook(game->win, 17, 0, close_win, game); /* clic sur la croix */
 	mlx_hook(game->win, 2, 1L << 0, key_press, game);   /* KeyPress   */
 	mlx_hook(game->win, 3, 1L << 1, key_release, game); /* KeyRelease */
-	mlx_hook(game->win, 6, 1L << 6, mouse_hook, game);
+	if(BONUS)
+		mlx_hook(game->win, 6, 1L << 6, mouse_hook, game);
 	return (0);
 }
 static void	load_one(void *mlx, t_img *tex, char *path)

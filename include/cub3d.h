@@ -20,7 +20,6 @@
 # define ZOOM_SPEED 1.0   /* vitesse de zoom, en facteur par seconde */
 # define FOV_MIN    0.20  /* longueur mini du plan camera (zoom max) */
 # define FOV_MAX    1.20  /* longueur maxi du plan camera (dezoom max) */
-
 # define MM_TILE 8    /* taille d'une case sur la minimap, en pixels */
 # define MM_PAD  12   /* marge depuis le bord de l'écran */
 # define WALL_MARGIN 0.2
@@ -54,18 +53,6 @@ typedef struct s_img
 	int		width;       // Largeur de l'image en pixels
 	int		height;      // Hauteur de l'image en pixels
 }	t_img;
-
-// typedef struct s_config
-// {
-// 	char	*no;
-// 	char	*so;
-// 	char	*we;
-// 	char	*ea;
-// 	int		f[3];
-// 	int		c[3];
-// 	int		f_set;
-// 	int		c_set;
-// } t_config;
 
 typedef struct s_player
 {
@@ -118,9 +105,7 @@ typedef struct s_game
 	t_img		tex[4];     /* index : 0=NO 1=SO 2=WE 3=EA (cf. enum ci-dessous) */
 	t_map		map;
 	t_player	player;
-
 	int			keys[65536]; /* état courant des touches (pressed = 1) */
-
 	double		last_time;   /* pour calculer le delta-time du mouvement */
 }	t_game;
 

@@ -26,27 +26,34 @@ int	is_wall(t_map *map, double x, double y)
 	my = (int)y;
 	if (my < 0 || my >= map->height || mx < 0 || mx >= map->width)
 		return (1);
+	if (!BONUS)
+		return (0);
 	return (map->grid[my][mx] == '1');
 }
 static void try_move(t_game *game, double dx, double dy)
 {
-    t_player    *p;
-    double      margin_x;
-    double      margin_y;
+	t_player	*p;
+	double		margin_x;
+	double		margin_y;
 
-    p = &game->player;
-    if (dx > 0)
-        margin_x = WALL_MARGIN;
-    else
-        margin_x = -WALL_MARGIN;
-    if (dy > 0)
-        margin_y = WALL_MARGIN;
-    else
-        margin_y = -WALL_MARGIN;
-    if (!is_wall(&game->map, p->x + dx + margin_x, p->y))
-        p->x += dx;
-    if (!is_wall(&game->map, p->x, p->y + dy + margin_y))
-        p->y += dy;
+	p = &game->player;
+	margin_x = 0;
+	margin_y = 0;
+	if (BONUS)
+	{
+		if (dx > 0)
+			margin_x = WALL_MARGIN;
+		else
+			margin_x = -WALL_MARGIN;
+		if (dy > 0)
+			margin_y = WALL_MARGIN;
+		else
+			margin_y = -WALL_MARGIN;
+	}
+	if (!is_wall(&game->map, p->x + dx + margin_x, p->y))
+		p->x += dx;
+	if (!is_wall(&game->map, p->x, p->y + dy + margin_y))
+		p->y += dy;
 }
 
 void	rotate_player(t_game *game, double angle)
@@ -87,8 +94,8 @@ void	move_player(t_game *game, double dt)
 		rotate_player(game, -ROT_SPEED * dt);
 	if (game->keys[KEY_RIGHT])
 		rotate_player(game, ROT_SPEED * dt);
-	if (game->keys[KEY_UP])
+	if (BONUS && game->keys[KEY_UP])
 		zoom_player(game, 1.0 - ZOOM_SPEED * dt);
-	if (game->keys[KEY_DOWN])
+	if (BONUS && game->keys[KEY_DOWN])
 		zoom_player(game, 1.0 + ZOOM_SPEED * dt);
 }

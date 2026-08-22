@@ -1,8 +1,7 @@
 NAME := cub3d
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -g3 -DBONUS=$(BONUS)
-
 BONUS = 0
+CFLAGS := -Wall -Wextra -Werror -g3 -DBONUS=$(BONUS)
 
 # === MLX ===
 MLX_PATH = minilibx-linux/
@@ -32,6 +31,7 @@ src/raycasting/minimap.c \
 src/raycasting/raycast.c
 
 OBJ := $(SRC:.c=.o)
+BONUS_FLAG := .bonus_flag
 
 # === INCLUDES ===
 INCLUDES := -Iinclude -I$(MLX_PATH) -I$(LIBFT_PATH)
@@ -40,13 +40,19 @@ INCLUDES := -Iinclude -I$(MLX_PATH) -I$(LIBFT_PATH)
 LIBS := $(MLX) $(LIBFT) -lXext -lX11 -lm -lz
 
 # === RULES ===
-all: $(MLX) $(LIBFT) $(NAME)
+all: $(MLX) $(LIBFT) check_bonus $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+check_bonus:
+	@if [ ! -f $(BONUS_FLAG) ] || [ "$$(cat $(BONUS_FLAG))" != "$(BONUS)" ]; then \
+		rm -f $(OBJ); \
+		echo $(BONUS) > $(BONUS_FLAG); \
+	fi
 
 # === LIBFT BUILD ===
 $(LIBFT):
@@ -61,7 +67,7 @@ bonus:
 	make BONUS=1
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) $(BONUS_FLAG)
 	make -C $(LIBFT_PATH) clean
 	make -C $(MLX_PATH) clean
 
@@ -71,4 +77,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re bonus check_bonus
