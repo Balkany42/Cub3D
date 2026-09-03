@@ -86,3 +86,11 @@ II/	Vérifier que la map est valide
 	avoir un piège
 4/	Des portes qui s'ouvrent et se ferment
 5/	Faire la rotation du joueur avec la souris
+
+
+Ne pas oublier :
+- Faire compliler la mlx avec le Makefile
+
+Tests :
+- Couleur pas bonne
+- Textures absentes
