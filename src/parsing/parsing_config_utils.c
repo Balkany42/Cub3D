@@ -37,14 +37,18 @@ static int	has_valid_xpm_extension(char *path)
 
 static int	set_texture(t_game *game, char **dst, char *value)
 {
+	int	fd;
+
 	if (*dst != NULL)
 		return (free(value), parse_error(game, "Duplicated texture token !"));
 	if (ft_strlen_break(value, MAX_PATH_LEN))
 		return (free(value), parse_error(game, "Texture path too long !"));
 	if (!has_valid_xpm_extension(value))
 		return (free(value), parse_error(game, "Texture must be .xpm !"));
-	if (access(value, F_OK | R_OK) != 0)
+	fd = open(value, O_RDONLY);
+	if (fd == -1)
 		return (free(value), parse_error(game, "Missing texture file !"));
+	close(fd);
 	*dst = value;
 	return (0);
 }

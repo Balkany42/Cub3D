@@ -1,96 +1,67 @@
-====================================PARSING=====================================
+*This project has been created as a part of 42 curriculum by diachoug, mgrager*
 
-I/	Read la map
+## DESCRIPTION
+The aim of the project cub3D is to created a Wolfenstein like game using the raycasting method.
+We have to implement, for the mandatory part :
+- A raycasting with fish a fish-eye correction
+- A player movement
+- A camera movement
+- A player that is spawning in the corresponding direction (N = north, S = south, e = east, W = west)
+- Read the instruction directly on the .cub map file (NO = texture north, SO = texture south, EA = texture east, WE = texture west, F = floor colour, C = ceiling colour, the map itselft must be the seventh and last element)
+- The red cross or ESC must close the program nicely
+- A clear error message have to appear on the terminal in case the map is rejected
 
-1/ 	Ouvrir le fichier CUB3D avec read
-2/ 	Lire chaque ligne (simple avec GNL)
-3/ 	Stocker la map
-4/ 	Ignorer les lignes vides avant la map
-5/ 	Interdire les lignes vides / caractères non valides dans la map
-6/ 	Fichier introuvable : erreur, mauvaise extension : erreur.
-	Attention piège gichier cachés, on a voulu me KO solong pour ça
-	espaces / tabulations considérés comme empty
+For the bonus part, we must add :
+- Wall collision
+- Animated sprite
+- Mouse pointer moving the camera
+- Doors that can open and close
+- A minimap system
 
-II/	Vérifier que la map est valide
-1/	Vérifier qu'on a bien dans l'ordre les textures et chemins correspondants :
-		-	NO
-		-	SO
-		-	WE
-		-	EA
-		-	Pas plus de directions
-		-	Peut être qu'il faut vérifier les chemins de texture ici ?
-		-	Doit être séparé de la partie suivante par une ou plusieurs
-			lignes vides
-2/	Vérifier qu'on a bien dans l'ordre les couleurs et identifiants
-	correspondants :
-		-	F (range imposée 0, 255, 255) //
-		-	C (range imposée 0, 255, 255) //
-		-	Pas plus de 2 couleurs
-		-	Doit être séparé de la partie suivante par une ou plusieurs
-			lignes vides
-3/	Vérifier la map (liste non exhaustive)
-		-	Vérifier que la map est bien fermée
-			(skipspaces and tabs)
-		-	Vérifier qu'il y a bien un seul joueur
-		-	Flood fill pour vérifier qu'on peut bien aller partout (même que
-			so_long a priori) // A priori non en fait
-		-	Vérifier les caractère invalides (autres que 0, 1, N, S, E, W)
-		-	Sécurité pour les dossiers infinis... On m'a cassé so_long comme ça
+For this project, more features have been added. We are going to talk about ir below
 
-		ATTENTION, LA MAP N'EST PAS FORCEMENT UN CARRE OU UN RECTANGLE
+## INSTRUCTIONS
+In the root repository, make sure that the MiniLibX is present. The repository name must be "minilibx-linux".
+For the mandatory part enter the command : 	Make
+For the bonus part enter the commande : 	Make bonus
+Then, launch the program ./cub3D with a map as argv[1].
+Enjoy.
 
-		Sujet à interprétation "Except for the map, each type of information
-		from an element can be separated by one or more spaces.
+## CONTROLS
+Mandatory :
+- W : 						Move up
+- A : 						Move left
+- S : 						Move back
+- D : 						Move right
+- Left array : 				Rotate camera left
+- Right array : 			Rotate camera right
+- ESC/rec cross :			Leave game
 
-=====================================INIT=======================================
+Bonus :
+- P :						Turn on/off elecricity
+- O :						Call ghosts
+- I :						Scare ghosts
+- Q :						Fast forward/hide message
+- M :						Controls
+- R :						Launch/relaunch the Mathix
+- Y :						Blue pill
+- T :						Red pill
+- Up array/wheel up :		Zoom in
+- Down array/wheel down :	Zoom out
 
-1/	Initialisation de la mlx
-2/	Chargement des textures (message d'erreur en cas d'erreur)
-3/	Création des structures (préparation moteru / raycast)
-		-	Joueur (pos, angle)
-		-	Carte
-		-	Textures
-		-	Paramètres de rendu
-	// Pour l'instant cette étape je comprend pas grand chose
+## FEATURES
+- A raycasting engine that differenciates the 4 faces, based on the one explained by lodev (see sources).
+- A control menu (press m).
+- A non blocking tutorial
+- A generic, as the form of a crawl (Star Wars like)
+- A Matrix (it's a surprise)
 
-====================================RAYCASTING==================================
-
-1/	Calcul des rayons
-2/	Détection des intersections
-3/	Correction du fish eye
-4/	Calcul de la distance projetée
-5/	Calcul de l'angle du rayon pour chaque colonne
-6/	DDA (C'est quoi ?)
-7/	Calcul de la distance réelle
-8/	Détermination de la hauteur du mur
-9/	Détermination de la structure à utiliser
-
-=====================================RENDER=====================================
-
-1/	Grosso modo un render similaire à solong, mais avec prise en compte du
-	raycasting de ce que j'ai compris
-
-====================================MOVEMENT====================================
-
-1/	Gestion des touches
-2/	Gestion des collisions (BONUS)
-3/	Rotation du joueur (on doit être capables de la faire se retourner)
-		De ce que j'ai compris, le mandatory c'est seulement avec les touches
-		du clavier, et le bonus avec la souris
-
-=====================================BONUS======================================
-
-1/	Des sprites animés (pas plus difficile que solong)
-2/	Une minimap (a priori très difficile)
-3/	Des collisions avec les murs (semble facile mais si c'est bonus il doit y
-	avoir un piège
-4/	Des portes qui s'ouvrent et se ferment
-5/	Faire la rotation du joueur avec la souris
+## RESOURCES
+- https://lodev.org/cgtutor/raycasting.html Main ressource, used for all the raycasting part
+- https://www.youtube.com/watch?v=F-Z3qLSLOOw Understand to understand whau is racasting
+- https://www.youtube.com/watch?v=NbSee-XM7WA
 
 
-Ne pas oublier :
-- Faire compliler la mlx avec le Makefile
-
-Tests :
-- Couleur pas bonne
-- Textures absentes
+## AI Usage
+Per the subject instructions, strict guidelines regarding AI usage were followed.
+AI has not been used for the completion of this project.
