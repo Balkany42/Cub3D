@@ -27,6 +27,8 @@ For the bonus part enter the commande : 	Make bonus
 Then, launch the program ./cub3D with a map as argv[1].
 Enjoy.
 
+Characters allowed in the map : N, S, E, W (player), 0 (floor), 1 wall. Bonus : 2 (must be a 3*3 surrounded by 2 floor), 3 (must be a 7*7 surrounded by 3 floors), C (door closed - O door open isn't accepted at init).
+
 ## CONTROLS
 Mandatory :
 - W : 						Move up
@@ -64,4 +66,3 @@ Bonus :
 
 ## AI Usage
 Per the subject instructions, strict guidelines regarding AI usage were followed.
-AI has not been used for the completion of this project.

@@ -66,14 +66,11 @@ src/utils/utils.c
 OBJ := $(SRC:.c=.o)
 BONUS_FLAG := .bonus_flag
 
-# === INCLUDES ===
 INCLUDES := -Iinclude -I$(MLX_PATH) -I$(LIBFT_PATH)
 HEADERS := include/cub3d.h
 
-# === LIBS ===
 LIBS := $(MLX) $(LIBFT) -lXext -lX11 -lm -lz
 
-# === RULES ===
 all: $(MLX) $(LIBFT) check_bonus $(NAME)
 
 $(NAME): $(OBJ)
@@ -88,11 +85,9 @@ check_bonus:
 		echo $(BONUS) > $(BONUS_FLAG); \
 	fi
 
-# === LIBFT BUILD ===
 $(LIBFT):
 	make -C $(LIBFT_PATH)
 
-# === MLX BUILD ===
 $(MLX):
 	@if [ -f "$(MLX_PATH)configure" ]; then chmod +x $(MLX_PATH)configure; fi
 	make -C $(MLX_PATH)
