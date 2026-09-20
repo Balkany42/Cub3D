@@ -1,9 +1,17 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_config_utils.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mgrager <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/31 05:22:04 by mgrager           #+#    #+#             */
+/*   Updated: 2026/08/31 05:23:01 by mgrager          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub3d.h"
 
-//extrait la valeur après le mot-clé (ex : le chemin après "NO"). 
-//Comme éplucher une étiquette de prix pour ne garder que le chiffre.
 char	*get_value(char *line, char *token)
 {
 	char	*trimmed;
@@ -17,9 +25,6 @@ char	*get_value(char *line, char *token)
 	return (trimmed);
 }
 
-//: vérifie que le fichier 
-//se termine bien par .xpm. Un contrôle de badge à l'entrée.
-
 static int	has_valid_xpm_extension(char *path)
 {
 	size_t	len;
@@ -30,35 +35,25 @@ static int	has_valid_xpm_extension(char *path)
 	return (ft_strncmp(path + len - 4, ".xpm", 4) == 0);
 }
 
-//stocke le chemin de texture après avoir vérifié qu'il n'existe pas
-// déjà et que le fichier est accessible. Comme ranger une clé dans un tiroir, 
-//mais seulement si le tiroir est vide et que la clé fonctionne.
-static int	set_texture(char **dst, char *value)
+static int	set_texture(t_game *game, char **dst, char *value)
 {
+	int	fd;
+
 	if (*dst != NULL)
-	{
-		free(value);
-		return (parse_error("identifiant de texture duplique"));
-	}
+		return (free(value), parse_error(game, "Duplicated texture token !"));
+	if (ft_strlen_break(value, MAX_PATH_LEN))
+		return (free(value), parse_error(game, "Texture path too long !"));
 	if (!has_valid_xpm_extension(value))
-	{
-		free(value);
-		return (parse_error("le fichier de texture doit etre en .xpm"));
-	}
-	if (access(value, F_OK | R_OK) != 0)
-	{
-		free(value);
-		return (parse_error("fichier de texture introuvable ou illisible"));
-	}
+		return (free(value), parse_error(game, "Texture must be .xpm !"));
+	fd = open(value, O_RDONLY);
+	if (fd == -1)
+		return (free(value), parse_error(game, "Missing texture file !"));
+	close(fd);
 	*dst = value;
 	return (0);
 }
 
-/*
-essaie de reconnaître NO/SO/WE/EA sur la ligne et déclenche le
-stockage si ça correspond. Un gabarit qu'on pose sur la ligne pour voir si ça matche.
-*/
-int	try_texture_token(t_config *cfg, char *line, int *handled)
+int	try_texture_token(t_game *game, char *line, int *handled)
 {
 	char	*value;
 
@@ -77,18 +72,16 @@ int	try_texture_token(t_config *cfg, char *line, int *handled)
 		return (0);
 	}
 	if (!value)
-		return (parse_error("valeur manquante pour un identifiant de texture"));
+		return (parse_error(game, "No path after token !"));
 	if (line[0] == 'N')
-		return (set_texture(&cfg->no, value));
+		return (set_texture(game, &game->map.no_path, value));
 	if (line[0] == 'S')
-		return (set_texture(&cfg->so, value));
+		return (set_texture(game, &game->map.so_path, value));
 	if (line[0] == 'W')
-		return (set_texture(&cfg->we, value));
-	return (set_texture(&cfg->ea, value));
+		return (set_texture(game, &game->map.we_path, value));
+	return (set_texture(game, &game->map.ea_path, value));
 }
 
-//vérifie qu'un bout de texte est bien un nombre entre 0 et 255.
-//un videur, encore, mais pour les nombres de couleur.
 int	parse_component(char *str, int *out)
 {
 	int	i;

@@ -1,70 +1,88 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_config_color.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mgrager <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/30 23:00:26 by mgrager           #+#    #+#             */
+/*   Updated: 2026/08/31 21:53:18 by mgrager          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub3d.h"
 
-//découpe "R,G,B" en trois morceaux et vérifie chacun. Comme
-//trier trois billes de couleurs différentes dans trois boîtes, 
-//en rejetant celles qui ne sont pas rondes
-static int	set_color(int dst[3], char *value, int *flag)
+static int	set_color(t_game *game, int dst[3], char *value, int *flag)
 {
 	char	**parts;
+	char	*trimmed;
 	int		i;
 
 	if (*flag)
-	{
-		free(value);
-		return (parse_error("identifiant de couleur duplique"));
-	}
+		return (free(value), parse_error(game, "Colour token duplicated !"));
 	parts = ft_split(value, ',');
 	free(value);
 	if (!parts || !parts[0] || !parts[1] || !parts[2] || parts[3])
-		return (parse_error("une couleur doit avoir exactement 3 composantes"));
+		return (free_table(parts), parse_error(game,
+				"A colour must have 3 components !"));
 	i = 0;
 	while (i < 3)
 	{
-		if (parse_component(parts[i], &dst[i]))
-			return (parse_error("composante de couleur invalide (attendu 0-255)"));
+		trimmed = ft_strtrim(parts[i], " \t");
+		if (!trimmed || parse_component(trimmed, &dst[i]))
+			return (free(trimmed), free_table(parts), parse_error(game,
+					"Invalid colour component ! (expected 0-255)"));
+		free(trimmed);
 		i++;
 	}
-	i = -1;
-	while (parts[++i])
-		free(parts[i]);
-	free(parts);
+	free_table(parts);
 	*flag = 1;
 	return (0);
 }
 
-/*
-** reconnaît F ou C sur la ligne et déclenche set_color
-Même logique que try_texture_token, mais côté couleurs.
-*/
-int	try_color_token(t_config *cfg, char *line, int *handled)
+static int	try_floor_color(t_game *game, char *line)
 {
 	char	*value;
+	int		ret;
 
+	value = get_value(line, "F");
+	if (!value)
+		return (parse_error(game, "Missing value for F !"));
+	ret = set_color(game, game->map.f, value, &game->map.f_set);
+	if (!ret)
+		game->map.floor_color = (game->map.f[0] << 16)
+			| (game->map.f[1] << 8) | game->map.f[2];
+	return (ret);
+}
+
+static int	try_ceil_color(t_game *game, char *line)
+{
+	char	*value;
+	int		ret;
+
+	value = get_value(line, "C");
+	if (!value)
+		return (parse_error(game, "Missing value for C !"));
+	ret = set_color(game, game->map.c, value, &game->map.c_set);
+	if (!ret)
+		game->map.ceil_color = (game->map.c[0] << 16)
+			| (game->map.c[1] << 8) | game->map.c[2];
+	return (ret);
+}
+
+int	try_color_token(t_game *game, char *line, int *handled)
+{
 	*handled = 1;
 	if (match_token(line, "F"))
-	{
-		if (!(value = get_value(line, "F")))
-			return (parse_error("valeur manquante pour F"));
-		return (set_color(cfg->f, value, &cfg->f_set));
-	}
+		return (try_floor_color(game, line));
 	if (match_token(line, "C"))
-	{
-		if (!(value = get_value(line, "C")))
-			return (parse_error("valeur manquante pour C"));
-		return (set_color(cfg->c, value, &cfg->c_set));
-	}
+		return (try_ceil_color(game, line));
 	*handled = 0;
 	return (0);
 }
 
-/*vérifie en fin de parsing que les 6 éléments (4 textures + 2
-ccouleurs) sont bien remplis. Une checklist avant décollage
-: si une case manque, on ne décolle pas.*/
-
-int	config_is_complete(t_config *cfg)
+int	config_is_complete(t_map *map)
 {
-	return (cfg->no != NULL && cfg->so != NULL && cfg->we != NULL
-		&& cfg->ea != NULL && cfg->f_set && cfg->c_set);
+	return (map->no_path != NULL && map->so_path != NULL && map->we_path != NULL
+		&& map->ea_path != NULL && map->f_set && map->c_set);
 }

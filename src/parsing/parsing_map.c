@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_map.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mgrager <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/31 22:06:11 by mgrager           #+#    #+#             */
+/*   Updated: 2026/08/31 22:06:50 by mgrager          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub3d.h"
 
@@ -64,25 +75,22 @@ static char	**build_grid(char **lines, int start, int width, int height)
 	{
 		grid[i] = pad_line(lines[start + i], width);
 		if (!grid[i])
-			return (NULL);
+			return (free_table(grid), NULL);
 		i++;
 	}
 	grid[height] = NULL;
 	return (grid);
 }
 
-/*
-** Point d'entree. 'start' est l'index de la premiere ligne de map
-** (celui laisse par parse_config). Remplit map->grid/width/height.
-*/
-int	parse_map(t_map *map, char **lines, int start)
+int	parse_map(t_game *game, char **lines, int start)
 {
-	map->height = get_map_height(lines, start);
-	if (map->height == 0)
-		return (parse_error("map vide"));
-	map->width = get_map_width(lines, start, map->height);
-	map->grid = build_grid(lines, start, map->width, map->height);
-	if (!map->grid)
-		return (parse_error("echec allocation de la map"));
+	game->map.height = get_map_height(lines, start);
+	if (game->map.height == 0)
+		return (parse_error(game, "Empty map !"));
+	game->map.width = get_map_width(lines, start, game->map.height);
+	game->map.grid = build_grid(lines, start,
+			game->map.width, game->map.height);
+	if (!game->map.grid)
+		return (parse_error(game, "Map allocation failed !"));
 	return (0);
 }

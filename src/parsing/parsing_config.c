@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_config.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mgrager <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/30 22:59:29 by mgrager           #+#    #+#             */
+/*   Updated: 2026/08/31 22:14:11 by mgrager          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub3d.h"
 
@@ -16,25 +26,27 @@ int	is_blank(char *line)
 	return (1);
 }
 
-/*
-** Retourne 1 si la ligne commence par un caractere de map valide
-** (0, 1, espace, N, S, E, W) -> sert a detecter le debut de la map.
-*/
 int	is_map_line(char *line)
 {
+	int	i;
+
+	i = 0;
 	if (!line || !line[0])
 		return (0);
 	if (is_blank(line))
 		return (0);
-	return (line[0] == '0' || line[0] == '1' || line[0] == ' '
-		|| line[0] == 'N' || line[0] == 'S'
-		|| line[0] == 'E' || line[0] == 'W');
+	while (line[i])
+	{
+		if (line[i] != '0' && line[i] != '1' && line[i] != ' '
+			&& line[i] != 'N' && line[i] != '\t' && line[i] != 'S'
+			&& line[i] != 'E' && line[i] != 'W' && line[i] != 'C'
+			&& line[i] != 'O' && line[i] != '2' && line[i] != '3')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-/*
-** Verifie que 'line' commence par 'token' suivi d'un espace/tab,
-** pour eviter que "NO" ne matche a tort "NORTH" ou similaire.
-*/
 int	match_token(char *line, char *token)
 {
 	size_t	len;
@@ -47,41 +59,34 @@ int	match_token(char *line, char *token)
 	return (1);
 }
 
-/*
-** Redirige une ligne de config vers le bon setter (texture ou couleur).
-** Retourne 0 si succes, 1 si erreur (l'appelant doit free/quitter).
-*/
-int	parse_config_line(t_config *cfg, char *line)
+int	parse_config_line(t_game *game, char *line)
 {
 	int	ret;
 	int	handled;
 
+	line = skip_ws(line);
 	if (is_blank(line))
 		return (0);
-	ret = try_texture_token(cfg, line, &handled);
+	ret = try_texture_token(game, line, &handled);
 	if (handled)
 		return (ret);
-	ret = try_color_token(cfg, line, &handled);
+	ret = try_color_token(game, line, &handled);
 	if (handled)
 		return (ret);
-	return (parse_error("identifiant inconnu ou mal forme dans la config"));
+	return (parse_error(game, "Unknown token !"));
 }
 
-/*
-** Point d'entree principal. Avance *i dans les lignes de config et
-** s'arrete des qu'il atteint la premiere ligne de map. Retourne 0 si ok.
-*/
-int	parse_config(t_config *cfg, char **lines, int *i)
+int	parse_config(t_game *game, char **lines, int *i)
 {
 	while (lines[*i] && !is_map_line(lines[*i]))
 	{
-		if (parse_config_line(cfg, lines[*i]))
+		if (parse_config_line(game, lines[*i]))
 			return (1);
 		(*i)++;
 	}
 	if (!lines[*i])
-		return (parse_error("aucune map trouvee dans le fichier"));
-	if (!config_is_complete(cfg))
-		return (parse_error("un ou plusieurs identifiants de config manquants"));
+		return (parse_error(game, "No map found in the file !"));
+	if (!config_is_complete(&game->map))
+		return (parse_error(game, "At least one missing token !"));
 	return (0);
 }
