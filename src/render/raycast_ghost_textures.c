@@ -19,12 +19,12 @@ static t_img	*pick_texture_absent(t_game *game, t_ray *r)
 		if (r->side == 0)
 		{
 			if (r->ray_dir_x > 0)
-				return (&game->tex[TEX_WE]);
-			return (&game->tex[TEX_EA]);
+				return (&game->tex[TEX_EA]);
+			return (&game->tex[TEX_WE]);
 		}
 		if (r->ray_dir_y > 0)
-			return (&game->tex[TEX_NO]);
-		return (&game->tex[TEX_SO]);
+			return (&game->tex[TEX_SO]);
+		return (&game->tex[TEX_NO]);
 	}
 	if (game->light > 0 && game->ghost_state == ABSENT)
 		return (&game->img_bonus.basics[2]);
